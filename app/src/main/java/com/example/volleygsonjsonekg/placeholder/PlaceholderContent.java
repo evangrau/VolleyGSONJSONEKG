@@ -46,6 +46,8 @@ public class PlaceholderContent {
      */
     public static final Map<String, GameCompanyModel> ITEM_MAP = new HashMap<>();
 
+    public boolean recreated = false;
+
     public List<GameCompanyModel> jsonParse(Activity activity) {
         String url = activity.getString(R.string.url);
 
@@ -66,17 +68,21 @@ public class PlaceholderContent {
 
                             for (int i = 0; i < jsonArray.length(); i++) {
                                 JSONObject gameCompany = jsonArray.getJSONObject(i);
-                                String name = gameCompany.getString("name");
-                                int year = gameCompany.getInt("year");
-                                String recentConsole = gameCompany.getString("recentConsole");
-                                GameCompanyModel model = new GameCompanyModel(name, year, recentConsole);
+                                String json = String.valueOf(gameCompany);
+                                Gson gson = new Gson();
+                                GameCompanyModel model = gson.fromJson(json, GameCompanyModel.class);
+
                                 ITEMS.add(model);
-                                ITEM_MAP.put(name, model);
+                                ITEM_MAP.put(model.getName(), model);
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
                         // NEXT, we need to use GSON to turn that JSON into a model
+                        if (!recreated) {
+                            activity.recreate();
+                            recreated = true;
+                        }
                     }
                 }, new Response.ErrorListener() {
             @Override
