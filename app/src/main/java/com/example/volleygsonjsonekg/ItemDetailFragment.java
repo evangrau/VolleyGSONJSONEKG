@@ -133,89 +133,46 @@ public class ItemDetailFragment extends Fragment {
     private void testAllThatJazz() {
         String url = res.getString(R.string.url);
 
-//        // Instantiate the RequestQueue.
-//        RequestQueue queue = Volley.newRequestQueue(getActivity());
-//
-//        // Request a string response from the provided URL.
-//        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
-//                new Response.Listener<String>() {
-//                    @Override
-//                    public void onResponse(String response) {
-//                        // Display the response string in our convenient existing text view
+        // Instantiate the RequestQueue.
+        RequestQueue queue = Volley.newRequestQueue(getActivity());
+
+        // Request a string response from the provided URL.
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            JSONObject object = response.getJSONObject("record");
+                            JSONArray jsonArray = object.getJSONArray("gameCompanies");
+
+                            for (int i = 0; i < jsonArray.length(); i++) {
+                                JSONObject gameCompany = jsonArray.getJSONObject(i);
+
+                                String name = gameCompany.getString("name");
+                                int year = gameCompany.getInt("year");
+                                String recentConsole = gameCompany.getString("recentConsole");
+
+                                mTextView.append(name + ", " + String.valueOf(year) + ", " + recentConsole + "\n\n");
+                            }
+                        } catch (JSONException e) {
+                            mTextView.setText("That didn't work!");
+                            e.printStackTrace();
+                        }
+                        // Display the response string in our convenient existing text view
+
 //                        mTextView.setText("Response is: "+ response);
-//                        // NEXT, we need to use GSON to turn that JSON into a model
-//                    }
-//                }, new Response.ErrorListener() {
-//            @Override
-//            public void onErrorResponse(VolleyError error) {
-//                // you should drop a breakpoint RIGHT HERE if you need to see the error coming back
-//                mTextView.setText("That didn't work!");
-//            }
-//        });
-//
-//        // Add the request to the RequestQueue.
-//        queue.add(stringRequest);
-
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null,
-                new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        try {
-                            JSONArray jsonArray = response.getJSONArray("gameCompanies");
-
-                            for (int i = 0; i < jsonArray.length(); i++) {
-                                JSONObject gameCompany = jsonArray.getJSONObject(i);
-
-                                String name = gameCompany.getString("name");
-                                int year = gameCompany.getInt("year");
-                                String recentConsole = gameCompany.getString("recentConsole");
-
-                                mTextView.append(name + ", " + String.valueOf(year) + ", " + recentConsole + "\n\n");
-                            }
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
+                        // NEXT, we need to use GSON to turn that JSON into a model
                     }
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
+                // you should drop a breakpoint RIGHT HERE if you need to see the error coming back
+                mTextView.setText("That didn't work!");
                 error.printStackTrace();
             }
         });
 
-        mQueue.add(request);
-    }
-
-    private void jsonParse() {
-        String url = res.getString(R.string.url);
-
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null,
-                new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        try {
-                            JSONArray jsonArray = response.getJSONArray("gameCompanies");
-
-                            for (int i = 0; i < jsonArray.length(); i++) {
-                                JSONObject gameCompany = jsonArray.getJSONObject(i);
-
-                                String name = gameCompany.getString("name");
-                                int year = gameCompany.getInt("year");
-                                String recentConsole = gameCompany.getString("recentConsole");
-
-                                mTextView.append(name + ", " + String.valueOf(year) + ", " + recentConsole + "\n\n");
-                            }
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                error.printStackTrace();
-            }
-        });
-
-        mQueue.add(request);
+        // Add the request to the RequestQueue.
+        queue.add(request);
     }
 }
