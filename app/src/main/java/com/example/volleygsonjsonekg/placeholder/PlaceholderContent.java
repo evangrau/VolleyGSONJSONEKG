@@ -1,5 +1,6 @@
 package com.example.volleygsonjsonekg.placeholder;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
 
@@ -32,8 +33,8 @@ import java.util.Map;
  */
 public class PlaceholderContent {
 
-    private final Context context = App.getContext();
-    private final Resources res = context.getResources();
+//    private final Context context = App.getContext();
+//    private final Resources res = context.getResources();
 
     /**
      * An array of sample (placeholder) items.
@@ -45,8 +46,11 @@ public class PlaceholderContent {
      */
     public static final Map<String, GameCompanyModel> ITEM_MAP = new HashMap<>();
 
-    public void jsonParse() {
-        String url = res.getString(R.string.url);
+    public List<GameCompanyModel> jsonParse(Activity activity) {
+        String url = activity.getString(R.string.url);
+
+        // Instantiate the RequestQueue.
+        RequestQueue queue = Volley.newRequestQueue(activity);
 
         // Request a string response from the provided URL.
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null,
@@ -81,5 +85,9 @@ public class PlaceholderContent {
                 error.printStackTrace();
             }
         });
+
+        // Add the request to the RequestQueue.
+        queue.add(request);
+        return ITEMS;
     }
 }

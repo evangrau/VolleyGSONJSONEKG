@@ -58,9 +58,9 @@ public class ItemListFragment extends Fragment {
     }
 
     private void setupRecyclerView(RecyclerView recyclerView, View itemDetailFragmentContainer) {
-        contentMaker.jsonParse();
+        contentMaker.jsonParse(this.getActivity());
         recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(
-                PlaceholderContent.ITEMS,
+                contentMaker.ITEMS,
                 itemDetailFragmentContainer
         ));
     }
@@ -93,7 +93,7 @@ public class ItemListFragment extends Fragment {
         public void onBindViewHolder(final ViewHolder holder, int position) {
             holder.companyModel = mValues.get(position);
             holder.mIdView.setText(mValues.get(position).getName());
-            holder.mContentView.setText(mValues.get(position).getYear());
+            holder.mContentView.setText(String.valueOf(mValues.get(position).getYear()));
 
             holder.itemView.setTag(mValues.get(position));
             holder.itemView.setOnClickListener(itemView -> {
