@@ -4,6 +4,7 @@ import android.content.ClipData;
 import android.content.Context;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.util.JsonReader;
 import android.view.DragEvent;
 
 import androidx.fragment.app.Fragment;
@@ -17,12 +18,17 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.example.volleygsonjsonekg.placeholder.PlaceholderContent;
 import com.example.volleygsonjsonekg.databinding.FragmentItemDetailBinding;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  * A fragment representing a single Item detail screen.
@@ -41,13 +47,15 @@ public class ItemDetailFragment extends Fragment {
     /**
      * The placeholder content this fragment is presenting.
      */
-    private PlaceholderContent.PlaceholderItem mItem;
+    private GameCompanyModel mItem;
     private CollapsingToolbarLayout mToolbarLayout;
     private TextView mTextView;
     private FloatingActionButton testingFab;
 
     private final Context context = App.getContext();
     private final Resources res = context.getResources();
+
+    private RequestQueue mQueue;
 
     private final View.OnDragListener dragListener = (v, event) -> {
         if (event.getAction() == DragEvent.ACTION_DROP) {
@@ -89,6 +97,8 @@ public class ItemDetailFragment extends Fragment {
         mTextView = binding.itemDetail;
         testingFab = rootView.findViewById(R.id.fab);
 
+        mQueue = Volley.newRequestQueue(getActivity());
+
         // Show the placeholder content as text in a TextView & in the toolbar if available.
         updateContent();
         rootView.setOnDragListener(dragListener);
@@ -103,9 +113,9 @@ public class ItemDetailFragment extends Fragment {
 
     private void updateContent() {
         if (mItem != null) {
-            mTextView.setText(mItem.details);
+            mTextView.setText(mItem.getRecentConsole());
             if (mToolbarLayout != null) {
-                mToolbarLayout.setTitle(mItem.content);
+                mToolbarLayout.setTitle(mItem.getName());
             }
         }
         if (testingFab != null)
@@ -123,27 +133,89 @@ public class ItemDetailFragment extends Fragment {
     private void testAllThatJazz() {
         String url = res.getString(R.string.url);
 
-        // Instantiate the RequestQueue.
-        RequestQueue queue = Volley.newRequestQueue(getActivity());
+//        // Instantiate the RequestQueue.
+//        RequestQueue queue = Volley.newRequestQueue(getActivity());
+//
+//        // Request a string response from the provided URL.
+//        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
+//                new Response.Listener<String>() {
+//                    @Override
+//                    public void onResponse(String response) {
+//                        // Display the response string in our convenient existing text view
+//                        mTextView.setText("Response is: "+ response);
+//                        // NEXT, we need to use GSON to turn that JSON into a model
+//                    }
+//                }, new Response.ErrorListener() {
+//            @Override
+//            public void onErrorResponse(VolleyError error) {
+//                // you should drop a breakpoint RIGHT HERE if you need to see the error coming back
+//                mTextView.setText("That didn't work!");
+//            }
+//        });
+//
+//        // Add the request to the RequestQueue.
+//        queue.add(stringRequest);
 
-        // Request a string response from the provided URL.
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
-                new Response.Listener<String>() {
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null,
+                new Response.Listener<JSONObject>() {
                     @Override
-                    public void onResponse(String response) {
-                        // Display the response string in our convenient existing text view
-                        mTextView.setText("Response is: "+ response);
-                        // NEXT, we need to use GSON to turn that JSON into a model
+                    public void onResponse(JSONObject response) {
+                        try {
+                            JSONArray jsonArray = response.getJSONArray("gameCompanies");
+
+                            for (int i = 0; i < jsonArray.length(); i++) {
+                                JSONObject gameCompany = jsonArray.getJSONObject(i);
+
+                                String name = gameCompany.getString("name");
+                                int year = gameCompany.getInt("year");
+                                String recentConsole = gameCompany.getString("recentConsole");
+
+                                mTextView.append(name + ", " + String.valueOf(year) + ", " + recentConsole + "\n\n");
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
                     }
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                // you should drop a breakpoint RIGHT HERE if you need to see the error coming back
-                mTextView.setText("That didn't work!");
+                error.printStackTrace();
             }
         });
 
-        // Add the request to the RequestQueue.
-        queue.add(stringRequest);
+        mQueue.add(request);
+    }
+
+    private void jsonParse() {
+        String url = res.getString(R.string.url);
+
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            JSONArray jsonArray = response.getJSONArray("gameCompanies");
+
+                            for (int i = 0; i < jsonArray.length(); i++) {
+                                JSONObject gameCompany = jsonArray.getJSONObject(i);
+
+                                String name = gameCompany.getString("name");
+                                int year = gameCompany.getInt("year");
+                                String recentConsole = gameCompany.getString("recentConsole");
+
+                                mTextView.append(name + ", " + String.valueOf(year) + ", " + recentConsole + "\n\n");
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                error.printStackTrace();
+            }
+        });
+
+        mQueue.add(request);
     }
 }

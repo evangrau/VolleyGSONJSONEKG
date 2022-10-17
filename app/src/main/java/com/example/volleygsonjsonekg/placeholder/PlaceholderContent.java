@@ -1,5 +1,7 @@
 package com.example.volleygsonjsonekg.placeholder;
 
+import com.example.volleygsonjsonekg.GameCompanyModel;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -16,29 +18,29 @@ public class PlaceholderContent {
     /**
      * An array of sample (placeholder) items.
      */
-    public static final List<PlaceholderItem> ITEMS = new ArrayList<PlaceholderItem>();
+    public static final List<GameCompanyModel> ITEMS = new ArrayList<GameCompanyModel>();
 
     /**
      * A map of sample (placeholder) items, by ID.
      */
-    public static final Map<String, PlaceholderItem> ITEM_MAP = new HashMap<String, PlaceholderItem>();
+    public static final Map<String, GameCompanyModel> ITEM_MAP = new HashMap<String, GameCompanyModel>();
 
     private static final int COUNT = 25;
 
     static {
         // Add some sample items.
         for (int i = 1; i <= COUNT; i++) {
-            addItem(createPlaceholderItem(i));
+            addItem(createGameCompanyModel(i));
         }
     }
 
-    private static void addItem(PlaceholderItem item) {
+    private static void addItem(GameCompanyModel item) {
         ITEMS.add(item);
-        ITEM_MAP.put(item.id, item);
+        ITEM_MAP.put(item.getName(), item);
     }
 
-    private static PlaceholderItem createPlaceholderItem(int position) {
-        return new PlaceholderItem(String.valueOf(position), "Item " + position, makeDetails(position));
+    private static GameCompanyModel createGameCompanyModel(int position) {
+        return new GameCompanyModel(String.valueOf(position), position, makeDetails(position));
     }
 
     private static String makeDetails(int position) {
@@ -48,25 +50,5 @@ public class PlaceholderContent {
             builder.append("\nMore details information here.");
         }
         return builder.toString();
-    }
-
-    /**
-     * A placeholder item representing a piece of content.
-     */
-    public static class PlaceholderItem {
-        public final String id;
-        public final String content;
-        public final String details;
-
-        public PlaceholderItem(String id, String content, String details) {
-            this.id = id;
-            this.content = content;
-            this.details = details;
-        }
-
-        @Override
-        public String toString() {
-            return content;
-        }
     }
 }
