@@ -1,6 +1,23 @@
 package com.example.volleygsonjsonekg.placeholder;
 
+import android.content.Context;
+import android.content.res.Resources;
+
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+import com.example.volleygsonjsonekg.App;
 import com.example.volleygsonjsonekg.GameCompanyModel;
+import com.example.volleygsonjsonekg.R;
+import com.google.gson.Gson;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -15,40 +32,54 @@ import java.util.Map;
  */
 public class PlaceholderContent {
 
+    private final Context context = App.getContext();
+    private final Resources res = context.getResources();
+
     /**
      * An array of sample (placeholder) items.
      */
-    public static final List<GameCompanyModel> ITEMS = new ArrayList<GameCompanyModel>();
+    public static final List<GameCompanyModel> ITEMS = new ArrayList<>();
 
     /**
      * A map of sample (placeholder) items, by ID.
      */
-    public static final Map<String, GameCompanyModel> ITEM_MAP = new HashMap<String, GameCompanyModel>();
+    public static final Map<String, GameCompanyModel> ITEM_MAP = new HashMap<>();
 
-    private static final int COUNT = 25;
+    public void jsonParse() {
+        String url = res.getString(R.string.url);
 
-    static {
-        // Add some sample items.
-        for (int i = 1; i <= COUNT; i++) {
-            addItem(createGameCompanyModel(i));
-        }
-    }
+        // Request a string response from the provided URL.
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            JSONObject object = response.getJSONObject("record");
+                            JSONArray jsonArray = object.getJSONArray("gameCompanies");
 
-    private static void addItem(GameCompanyModel item) {
-        ITEMS.add(item);
-        ITEM_MAP.put(item.getName(), item);
-    }
+                            ITEMS.clear();
+                            ITEM_MAP.clear();
 
-    private static GameCompanyModel createGameCompanyModel(int position) {
-        return new GameCompanyModel(String.valueOf(position), position, makeDetails(position));
-    }
-
-    private static String makeDetails(int position) {
-        StringBuilder builder = new StringBuilder();
-        builder.append("Details about Item: ").append(position);
-        for (int i = 0; i < position; i++) {
-            builder.append("\nMore details information here.");
-        }
-        return builder.toString();
+                            for (int i = 0; i < jsonArray.length(); i++) {
+                                JSONObject gameCompany = jsonArray.getJSONObject(i);
+                                String name = gameCompany.getString("name");
+                                int year = gameCompany.getInt("year");
+                                String recentConsole = gameCompany.getString("recentConsole");
+                                GameCompanyModel model = new GameCompanyModel(name, year, recentConsole);
+                                ITEMS.add(model);
+                                ITEM_MAP.put(name, model);
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        // NEXT, we need to use GSON to turn that JSON into a model
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                // you should drop a breakpoint RIGHT HERE if you need to see the error coming back
+                error.printStackTrace();
+            }
+        });
     }
 }

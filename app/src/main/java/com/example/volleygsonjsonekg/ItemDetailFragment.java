@@ -4,26 +4,23 @@ import android.content.ClipData;
 import android.content.Context;
 import android.content.res.Resources;
 import android.os.Bundle;
-import android.util.JsonReader;
 import android.view.DragEvent;
-
-import androidx.fragment.app.Fragment;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import androidx.fragment.app.Fragment;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.google.android.material.appbar.CollapsingToolbarLayout;
-import com.example.volleygsonjsonekg.placeholder.PlaceholderContent;
 import com.example.volleygsonjsonekg.databinding.FragmentItemDetailBinding;
+import com.example.volleygsonjsonekg.placeholder.PlaceholderContent;
+import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import org.json.JSONArray;
@@ -124,13 +121,13 @@ public class ItemDetailFragment extends Fragment {
                 @Override
                 public void onClick(View view)
                 {
-                    testAllThatJazz();
+                    jsonParse();
                 }
             });
         }
     }
 
-    private void testAllThatJazz() {
+    private void jsonParse() {
         String url = res.getString(R.string.url);
 
         // Instantiate the RequestQueue.
@@ -144,6 +141,7 @@ public class ItemDetailFragment extends Fragment {
                         try {
                             JSONObject object = response.getJSONObject("record");
                             JSONArray jsonArray = object.getJSONArray("gameCompanies");
+                            mTextView.setText("");
 
                             for (int i = 0; i < jsonArray.length(); i++) {
                                 JSONObject gameCompany = jsonArray.getJSONObject(i);
