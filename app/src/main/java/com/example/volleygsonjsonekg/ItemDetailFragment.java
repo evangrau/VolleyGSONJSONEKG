@@ -44,7 +44,7 @@ public class ItemDetailFragment extends Fragment {
     /**
      * The placeholder content this fragment is presenting.
      */
-    private GameCompanyModel mItem;
+    private MyModel mItem;
     private CollapsingToolbarLayout mToolbarLayout;
     private TextView mTextView;
 
@@ -101,7 +101,7 @@ public class ItemDetailFragment extends Fragment {
 
     private void updateContent() {
         if (mItem != null) {
-            mTextView.setText("Most recent console:\n" + mItem.getRecentConsole());
+            mTextView.setText(mItem.getDescription());
             if (mToolbarLayout != null) {
                 mToolbarLayout.setTitle(mItem.getName());
             }

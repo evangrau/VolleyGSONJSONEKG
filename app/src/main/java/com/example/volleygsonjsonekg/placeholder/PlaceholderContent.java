@@ -12,7 +12,8 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.volleygsonjsonekg.App;
-import com.example.volleygsonjsonekg.GameCompanyModel;
+import com.example.volleygsonjsonekg.MyModel;
+import com.example.volleygsonjsonekg.MyModel;
 import com.example.volleygsonjsonekg.R;
 import com.google.gson.Gson;
 
@@ -39,17 +40,17 @@ public class PlaceholderContent {
     /**
      * An array of sample (placeholder) items.
      */
-    public static final List<GameCompanyModel> ITEMS = new ArrayList<>();
+    public static final List<MyModel> ITEMS = new ArrayList<>();
 
     /**
      * A map of sample (placeholder) items, by ID.
      */
-    public static final Map<String, GameCompanyModel> ITEM_MAP = new HashMap<>();
+    public static final Map<String, MyModel> ITEM_MAP = new HashMap<>();
 
     public boolean recreated = false;
 
-    public List<GameCompanyModel> jsonParse(Activity activity) {
-        String url = activity.getString(R.string.url);
+    public List<MyModel> jsonParse(Activity activity) {
+        String url = activity.getString(R.string.my_url);
 
         // Instantiate the RequestQueue.
         RequestQueue queue = Volley.newRequestQueue(activity);
@@ -61,7 +62,7 @@ public class PlaceholderContent {
                     public void onResponse(JSONObject response) {
                         try {
                             JSONObject object = response.getJSONObject("record");
-                            JSONArray jsonArray = object.getJSONArray("gameCompanies");
+                            JSONArray jsonArray = object.getJSONArray("myFavoriteGames");
 
                             ITEMS.clear();
                             ITEM_MAP.clear();
@@ -70,7 +71,7 @@ public class PlaceholderContent {
                                 JSONObject gameCompany = jsonArray.getJSONObject(i);
                                 String json = String.valueOf(gameCompany);
                                 Gson gson = new Gson();
-                                GameCompanyModel model = gson.fromJson(json, GameCompanyModel.class);
+                                MyModel model = gson.fromJson(json, MyModel.class);
 
                                 ITEMS.add(model);
                                 ITEM_MAP.put(model.getName(), model);

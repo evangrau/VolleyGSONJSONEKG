@@ -74,10 +74,10 @@ public class ItemListFragment extends Fragment {
     public static class SimpleItemRecyclerViewAdapter
             extends RecyclerView.Adapter<SimpleItemRecyclerViewAdapter.ViewHolder> {
 
-        private final List<GameCompanyModel> mValues;
+        private final List<MyModel> mValues;
         private final View mItemDetailFragmentContainer;
 
-        SimpleItemRecyclerViewAdapter(List<GameCompanyModel> items, View itemDetailFragmentContainer) {
+        SimpleItemRecyclerViewAdapter(List<MyModel> items, View itemDetailFragmentContainer) {
             mValues = items;
             mItemDetailFragmentContainer = itemDetailFragmentContainer;
         }
@@ -91,7 +91,7 @@ public class ItemListFragment extends Fragment {
 
         @Override
         public void onBindViewHolder(final ViewHolder holder, int position) {
-            holder.companyModel = mValues.get(position);
+            holder.modelItem = mValues.get(position);
             holder.mIdView.setText(mValues.get(position).getName());
             holder.mContentView.setText(String.valueOf(mValues.get(position).getYear()));
 
@@ -116,7 +116,7 @@ public class ItemListFragment extends Fragment {
         class ViewHolder extends RecyclerView.ViewHolder {
             final TextView mIdView;
             final TextView mContentView;
-            public GameCompanyModel companyModel;
+            public MyModel modelItem;
 
             ViewHolder(ItemListContentBinding binding) {
                 super(binding.getRoot());
